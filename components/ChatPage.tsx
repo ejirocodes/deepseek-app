@@ -151,7 +151,7 @@ const ChatPage = () => {
         options={{
           headerTitle: () => (
             <HeaderDropDown
-              title="DeepSeek"
+              title={deepseekModel === 'deepseek-chat' ? 'DeepSeek Chat' : 'DeepSeek Coder'}
               items={models.map((model) => ({ key: model.key, title: model.title, icon: model.icon }))}
               onSelect={onModelVersionChange}
               selected={deepseekModel}

@@ -1,4 +1,5 @@
 import Colors from '@/constants/Colors';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Text, View } from 'react-native';
 import * as DropdownMenu from 'zeego/dropdown-menu';
 
@@ -17,14 +18,11 @@ const HeaderDropDown = ({ title, selected, items, onSelect }: Props) => {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontWeight: '500', fontSize: 16 }}>{title}</Text>
-          {selected && (
-            <Text
-              style={{ marginLeft: 10, fontSize: 16, fontWeight: '500', color: Colors.greyLight }}>
-              {selected} &gt;
-            </Text>
-          )}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+          <Text style={{ fontWeight: '500', fontSize: 16 }}>
+            {title}
+          </Text>
+          <Ionicons name="chevron-down" size={16} color={Colors.grey} />
         </View>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
