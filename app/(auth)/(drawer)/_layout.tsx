@@ -23,6 +23,7 @@ import { useDrawerStatus } from '@react-navigation/drawer';
 import { Chat } from '@/utils/Interfaces';
 import * as ContextMenu from 'zeego/context-menu';
 import { Keyboard } from 'react-native';
+import { useUser } from '@clerk/clerk-expo'
 
 export const CustomDrawerContent = (props: any) => {
   const { bottom, top } = useSafeAreaInsets();
@@ -30,6 +31,7 @@ export const CustomDrawerContent = (props: any) => {
   const isDrawerOpen = useDrawerStatus() === 'open';
   const [history, setHistory] = useState<Chat[]>([]);
   const router = useRouter();
+  const { user } = useUser();
 
   useEffect(() => {
     loadChats();
@@ -136,10 +138,10 @@ export const CustomDrawerContent = (props: any) => {
         <Link href="/(auth)/(modal)/settings" asChild>
           <TouchableOpacity style={styles.footer}>
             <Image
-              source={{ uri: 'https://galaxies.dev/img/meerkat_2.jpg' }}
+              source={{uri: user?.imageUrl }}
               style={styles.avatar}
             />
-            <Text style={styles.userName}>Mika Meerkat</Text>
+            <Text style={styles.userName}>{user?.fullName}</Text>
             <Ionicons name="ellipsis-horizontal" size={24} color={Colors.greyLight} />
           </TouchableOpacity>
         </Link>
@@ -180,7 +182,7 @@ const Layout = () => {
         name="(chat)/new"
         getId={() => Math.random().toString()}
         options={{
-          title: 'DeepSeek',
+          title: 'New Chat',
           drawerIcon: () => (
             <View style={[styles.item, { backgroundColor: '#000' }]}>
               <Image source={require('@/assets/images/deepseek-light.png')} style={styles.btnImage} />
@@ -220,44 +222,6 @@ const Layout = () => {
           ),
         }}
       />
-      <Drawer.Screen
-        name="dalle"
-        options={{
-          title: 'Dall·E',
-          drawerIcon: () => (
-            <View style={[styles.item, { backgroundColor: '#000' }]}>
-              <Image source={require('@/assets/images/dalle.png')} style={styles.dallEImage} />
-            </View>
-          ),
-        }}
-        listeners={{
-          drawerItemPress: (e) => {
-            e.preventDefault();
-            router.navigate('/(auth)/dalle');
-          },
-        }}
-      />
-      {/* <Drawer.Screen
-        name="explore"
-        options={{
-          title: 'Explore GPTs',
-          drawerIcon: () => (
-            <View
-              style={[
-                styles.item,
-                {
-                  backgroundColor: '#fff',
-                  width: 28,
-                  height: 28,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                },
-              ]}>
-              <Ionicons name="apps-outline" size={18} color="#000" />
-            </View>
-          ),
-        }}
-      /> */}
     </Drawer>
   );
 };

@@ -1,76 +1,63 @@
 import Colors from '@/constants/Colors';
 import { defaultStyles } from '@/constants/Styles';
 import { keyStorage } from '@/utils/Storage';
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuth, useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
-import { useMMKVString } from 'react-native-mmkv';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Button, Alert } from 'react-native';
+
 const Page = () => {
-  const [key, setKey] = useMMKVString('apikey', keyStorage);
-  const [organization, setOrganization] = useMMKVString('org', keyStorage);
+  const { user } = useUser();
 
-  const [apiKey, setApiKey] = useState('');
-  const [org, setOrg] = useState('');
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
   const router = useRouter();
-
   const { signOut } = useAuth();
 
-  const saveApiKey = async () => {
-    setKey(apiKey);
-    setOrganization(org);
+  const saveSettings = async () => {
+    try {
+      await user?.update({
+        firstName,
+        lastName,
+      });
     router.navigate('/(auth)/(drawer)');
-  };
 
-  const removeApiKey = async () => {
-    setKey('');
-    setOrganization('');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update profile');
+    }
+
   };
 
   return (
     <View style={styles.container}>
-      {key && key !== '' && (
-        <>
-          <Text style={styles.label}>You are all set!</Text>
-          <TouchableOpacity
-            style={[defaultStyles.btn, { backgroundColor: Colors.primary }]}
-            onPress={removeApiKey}>
-            <Text style={styles.buttonText}>Remove API Key</Text>
-          </TouchableOpacity>
-        </>
-      )}
+      <Text style={styles.label}>Profile Settings:</Text>
+      <TextInput
+        style={styles.input}
+        value={firstName}
+        onChangeText={setFirstName}
+        placeholder="First Name"
+        autoCorrect={false}
+      />
+      <TextInput
+        style={styles.input}
+        value={lastName}
+        onChangeText={setLastName}
+        placeholder="Last Name"
+        autoCorrect={false}
+      />
 
-      {(!key || key === '') && (
-        <>
-          <Text style={styles.label}>API Key & Organization:</Text>
-          <TextInput
-            style={styles.input}
-            value={apiKey}
-            onChangeText={setApiKey}
-            placeholder="Enter your API key"
-            autoCorrect={false}
-            autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            value={org}
-            onChangeText={setOrg}
-            placeholder="Your organization"
-            autoCorrect={false}
-            autoCapitalize="none"
-          />
+      
+      <TouchableOpacity
+        style={[defaultStyles.btn, { backgroundColor: Colors.primary }]}
+        onPress={saveSettings}>
+        <Text style={styles.buttonText}>Save Settings</Text>
+      </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[defaultStyles.btn, { backgroundColor: Colors.primary }]}
-            onPress={saveApiKey}>
-            <Text style={styles.buttonText}>Save API Key</Text>
-          </TouchableOpacity>
-        </>
-      )}
       <Button title="Sign Out" onPress={() => signOut()} color={Colors.grey} />
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -96,5 +83,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
   },
+  successText: {
+    fontSize: 16,
+    color: Colors.primary,
+    marginBottom: 20,
+  },
 });
+
 export default Page;
