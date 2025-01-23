@@ -2,6 +2,7 @@
   "name": "deepseek-app",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -60,6 +61,7 @@
     "react-native-svg": "14.1.0",
     "react-native-svg-transformer": "^1.5.0",
     "react-native-web": "~0.19.6",
+    "together-ai": "^0.11.1",
     "zeego": "^1.10.0"
   },
   "devDependencies": {

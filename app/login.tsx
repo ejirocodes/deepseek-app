@@ -86,7 +86,7 @@ const Login = () => {
       <View style={{ marginBottom: 30 }}>
         <TextInput
           autoCapitalize="none"
-          placeholder="john@pineapple.com"
+          placeholder="ejiro.asiuwhu@deepseek.ai"
           value={emailAddress?.trim()}
           onChangeText={setEmailAddress}
           style={styles.inputField}

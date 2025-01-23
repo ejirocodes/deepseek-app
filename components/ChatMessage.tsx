@@ -1,9 +1,21 @@
-import Colors from '@/constants/Colors';
-import { copyImageToClipboard, downloadAndSaveImage, shareImage } from '@/utils/Image';
-import { Message, Role } from '@/utils/Interfaces';
-import { Link } from 'expo-router';
-import { View, Text, StyleSheet, Image, ActivityIndicator, Pressable } from 'react-native';
-import * as ContextMenu from 'zeego/context-menu';
+import Colors from "@/constants/Colors";
+import {
+  copyImageToClipboard,
+  downloadAndSaveImage,
+  shareImage,
+} from "@/utils/Image";
+import { Message, Role } from "@/utils/Interfaces";
+import { Link } from "expo-router";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+  Pressable,
+} from "react-native";
+import * as ContextMenu from "zeego/context-menu";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 
 const ChatMessage = ({
   content,
@@ -12,24 +24,37 @@ const ChatMessage = ({
   prompt,
   loading,
 }: Message & { loading?: boolean }) => {
+  const { user } = useUser();
+
   const contextItems = [
-    { title: 'Copy', systemIcon: 'doc.on.doc', action: () => copyImageToClipboard(imageUrl!) },
     {
-      title: 'Save to Photos',
-      systemIcon: 'arrow.down.to.line',
+      title: "Copy",
+      systemIcon: "doc.on.doc",
+      action: () => copyImageToClipboard(imageUrl!),
+    },
+    {
+      title: "Save to Photos",
+      systemIcon: "arrow.down.to.line",
       action: () => downloadAndSaveImage(imageUrl!),
     },
-    { title: 'Share', systemIcon: 'square.and.arrow.up', action: () => shareImage(imageUrl!) },
+    {
+      title: "Share",
+      systemIcon: "square.and.arrow.up",
+      action: () => shareImage(imageUrl!),
+    },
   ];
 
   return (
     <View style={styles.row}>
       {role === Role.Bot ? (
-        <View style={[styles.item, { backgroundColor: '#000' }]}>
-          <Image source={require('@/assets/images/deepseek-light.png')} style={styles.btnImage} />
+        <View style={[styles.item, { backgroundColor: "#000" }]}>
+          <Image
+            source={require("@/assets/images/deepseek-light.png")}
+            style={styles.btnImage}
+          />
         </View>
       ) : (
-        <Image source={{ uri: 'https://galaxies.dev/img/meerkat_2.jpg' }} style={styles.avatar} />
+        <Image source={{ uri: user?.imageUrl }} style={styles.avatar} />
       )}
 
       {loading ? (
@@ -38,16 +63,20 @@ const ChatMessage = ({
         </View>
       ) : (
         <>
-          {content === '' && imageUrl ? (
+          {content === "" && imageUrl ? (
             <ContextMenu.Root>
               <ContextMenu.Trigger>
                 <Link
                   href={`/(auth)/(modal)/image/${encodeURIComponent(
                     imageUrl
                   )}?prompt=${encodeURIComponent(prompt!)}`}
-                  asChild>
+                  asChild
+                >
                   <Pressable>
-                    <Image source={{ uri: imageUrl }} style={styles.previewImage} />
+                    <Image
+                      source={{ uri: imageUrl }}
+                      style={styles.previewImage}
+                    />
                   </Pressable>
                 </Link>
               </ContextMenu.Trigger>
@@ -75,15 +104,15 @@ const ChatMessage = ({
 };
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     paddingHorizontal: 14,
     gap: 14,
     marginVertical: 12,
   },
   item: {
     borderRadius: 15,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   btnImage: {
     margin: 6,
@@ -94,12 +123,12 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
   text: {
     padding: 4,
     fontSize: 16,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     flex: 1,
   },
   previewImage: {
@@ -108,7 +137,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   loading: {
-    justifyContent: 'center',
+    justifyContent: "center",
     height: 26,
     marginLeft: 14,
   },
