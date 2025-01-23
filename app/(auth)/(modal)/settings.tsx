@@ -14,6 +14,7 @@ import {
   Image,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { Ionicons } from "@expo/vector-icons";
 
 const Page = () => {
   const { user } = useUser();
@@ -97,41 +98,52 @@ const Page = () => {
             style={styles.imageButton}
             onPress={() => pickImage(false)}
           >
+            <Ionicons name="images" size={24} color="white" />
             <Text style={styles.imageButtonText}>Gallery</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.imageButton}
             onPress={() => pickImage(true)}
           >
+            <Ionicons name="camera" size={24} color="white" />
             <Text style={styles.imageButtonText}>Camera</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <Text style={styles.label}>Profile Settings:</Text>
-      <TextInput
-        style={styles.input}
-        value={firstName}
-        onChangeText={setFirstName}
-        placeholder="First Name"
-        autoCorrect={false}
-      />
-      <TextInput
-        style={styles.input}
-        value={lastName}
-        onChangeText={setLastName}
-        placeholder="Last Name"
-        autoCorrect={false}
-      />
+      <Text style={styles.label}>Profile Settings</Text>
+      <View style={styles.inputContainer}>
+        <Ionicons name="person-outline" size={20} color="#666" />
+        <TextInput
+          style={styles.input}
+          value={firstName}
+          onChangeText={setFirstName}
+          placeholder="First Name"
+          autoCorrect={false}
+          placeholderTextColor="#666"
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Ionicons name="person-outline" size={20} color="#666" />
+        <TextInput
+          style={styles.input}
+          value={lastName}
+          onChangeText={setLastName}
+          placeholder="Last Name"
+          autoCorrect={false}
+          placeholderTextColor="#666"
+        />
+      </View>
+      <View style={{ marginHorizontal: 20 }}>
+        <TouchableOpacity
+          style={[defaultStyles.btn, { backgroundColor: "#000" }]}
+          onPress={saveSettings}
+        >
+          <Text style={styles.buttonText}>Save settings</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[defaultStyles.btn, { backgroundColor: Colors.primary }]}
-        onPress={saveSettings}
-      >
-        <Text style={styles.buttonText}>Save Settings</Text>
-      </TouchableOpacity>
-
-      <Button title="Sign Out" onPress={() => signOut()} color={Colors.grey} />
+        <Button title="Sign out" onPress={() => signOut()} color="#000" />
+      </View>
     </View>
   );
 };
@@ -139,51 +151,63 @@ const Page = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    backgroundColor: "#fff",
+  },
+  profileImageContainer: {
+    width: "100%",
+    height: "45%",
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: Colors.grey,
+  },
+  imageButtonsContainer: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    flexDirection: "row",
+    gap: 10,
+  },
+  imageButton: {
+    backgroundColor: "#000",
+    padding: 12,
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  imageButtonText: {
+    color: "white",
+    fontSize: 16,
   },
   label: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 20,
+    marginHorizontal: 20,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    paddingBottom: 8,
   },
   input: {
-    borderWidth: 1,
-    borderColor: Colors.primary,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    marginBottom: 20,
-    backgroundColor: "#fff",
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 16,
+    color: "#000",
   },
   buttonText: {
     color: "white",
     textAlign: "center",
     fontSize: 16,
-  },
-  profileImageContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-    backgroundColor: Colors.grey,
-  },
-  imageButtonsContainer: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  imageButton: {
-    backgroundColor: Colors.primary,
-    padding: 8,
-    borderRadius: 5,
-    minWidth: 80,
-  },
-  imageButtonText: {
-    color: "white",
-    textAlign: "center",
+    fontWeight: "600",
   },
 });
 

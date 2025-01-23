@@ -21,6 +21,14 @@ import { useSQLiteContext } from "expo-sqlite/next";
 import EventSource from "react-native-sse";
 import OpenAI from "openai";
 
+export type Props = {
+  onShouldSend: (
+    message: string,
+    isImageResponse?: boolean,
+    skipProcessing?: boolean
+  ) => void;
+};
+
 const ChatPage = () => {
   const [deepseekModel, setDeepseekModel] = useMMKVString(
     "deepseekModel",
@@ -66,21 +74,49 @@ const ChatPage = () => {
     setHeight(height / 2);
   };
 
-  const getCompletion = async (text: string) => {
+  const getCompletion = async (
+    text: string,
+    isImageResponse: boolean = false,
+    skipProcessing: boolean = false
+  ) => {
     if (messages.length === 0) {
       const res = await addChat(db, text);
       const chatID = res.lastInsertRowId;
       setChatId(chatID.toString());
-      await addMessage(db, chatID, { content: text, role: Role.User });
-    } else {
+    }
+
+    if (skipProcessing) {
       await addMessage(db, parseInt(chatIdRef.current), {
         content: text,
         role: Role.User,
       });
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { role: Role.User, content: text },
+      ]);
+      return;
     }
 
-    setMessages([
-      ...messages,
+    if (isImageResponse) {
+      await addMessage(db, parseInt(chatIdRef.current), {
+        content: text,
+        role: Role.Bot,
+      });
+
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { role: Role.Bot, content: text },
+      ]);
+      return;
+    }
+
+    await addMessage(db, parseInt(chatIdRef.current), {
+      content: text,
+      role: Role.User,
+    });
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
       { role: Role.User, content: text },
       { role: Role.Bot, content: "" },
     ]);

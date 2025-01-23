@@ -1,6 +1,6 @@
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import { View, StyleSheet, Clipboard, Image, Text } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import Animated, {
   Extrapolation,
@@ -11,7 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { BlurView } from "expo-blur";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
@@ -19,7 +19,11 @@ import * as ImagePicker from "expo-image-picker";
 const ATouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export type Props = {
-  onShouldSend: (message: string) => void;
+  onShouldSend: (
+    message: string,
+    isImageResponse?: boolean,
+    skipProcessing?: boolean
+  ) => void;
 };
 
 const MessageInput = ({ onShouldSend }: Props) => {
@@ -83,6 +87,9 @@ const MessageInput = ({ onShouldSend }: Props) => {
       const image = `data:${selectedImage.mimeType};base64,${selectedImage.base64}`;
 
       try {
+        // Send user message with a special flag to prevent Deepseek processing
+        onShouldSend(message, false, true);
+
         const response = await fetch(
           "https://api.together.xyz/v1/chat/completions",
           {
@@ -114,13 +121,14 @@ const MessageInput = ({ onShouldSend }: Props) => {
         );
 
         if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
+          throw new Error(`An error occurred, ${response.status}`);
         }
 
         const data = await response.json();
-        console.log("API Response:", data);
         const content = data.choices[0].message.content;
-        onShouldSend(content);
+
+        // Send bot response
+        onShouldSend(content, true);
 
         setMessage("");
         setSelectedImage(null);
@@ -128,7 +136,8 @@ const MessageInput = ({ onShouldSend }: Props) => {
         console.error("Error details:", error);
       }
     } else if (message) {
-      onShouldSend(message);
+      // Regular text message
+      onShouldSend(message, false);
       setMessage("");
     }
   };
@@ -150,7 +159,6 @@ const MessageInput = ({ onShouldSend }: Props) => {
   };
 
   const clearSelectedImage = () => {
-    console.log("clearSelectedImage");
     setSelectedImage(null);
   };
 
@@ -207,7 +215,7 @@ const MessageInput = ({ onShouldSend }: Props) => {
           multiline
         />
         {message.length > 0 ? (
-          <TouchableOpacity onPress={onSend}>
+          <TouchableOpacity onPress={onSend} hitSlop={10}>
             <Ionicons name="arrow-up-circle" size={24} color={Colors.grey} />
           </TouchableOpacity>
         ) : (
