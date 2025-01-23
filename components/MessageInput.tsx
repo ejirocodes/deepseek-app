@@ -87,7 +87,6 @@ const MessageInput = ({ onShouldSend }: Props) => {
       const image = `data:${selectedImage.mimeType};base64,${selectedImage.base64}`;
 
       try {
-        // Send user message with a special flag to prevent Deepseek processing
         onShouldSend(message, false, true);
 
         const response = await fetch(
@@ -127,16 +126,13 @@ const MessageInput = ({ onShouldSend }: Props) => {
         const data = await response.json();
         const content = data.choices[0].message.content;
 
-        // Send bot response
         onShouldSend(content, true);
-
         setMessage("");
         setSelectedImage(null);
       } catch (error) {
         console.error("Error details:", error);
       }
     } else if (message) {
-      // Regular text message
       onShouldSend(message, false);
       setMessage("");
     }
