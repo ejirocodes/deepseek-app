@@ -179,13 +179,16 @@ const ChatPage = () => {
   useEffect(() => {
     async function getDeepseekModels() {
       const deepseekModels = await openai.models.list();
-
       setModels(
         deepseekModels.data.map((model: any) => {
           if (model.id === "deepseek-chat") {
             return { key: model.id, title: "Chat", icon: "message" };
-          } else if (model.id === "deepseek-coder") {
-            return { key: model.id, title: "Coder", icon: "desktopcomputer" };
+          } else if (model.id === "deepseek-reasoner") {
+            return {
+              key: model.id,
+              title: "Reasoner",
+              icon: "brain",
+            };
           }
 
           return { key: model.id, title: model.id, icon: "bolt" };
@@ -205,7 +208,7 @@ const ChatPage = () => {
               title={
                 deepseekModel === "deepseek-chat"
                   ? "DeepSeek Chat"
-                  : "DeepSeek Coder"
+                  : "DeepSeek Reasoner"
               }
               items={models.map((model) => ({
                 key: model.key,

@@ -89,10 +89,20 @@ const Page = () => {
   return (
     <View style={styles.container}>
       <View style={styles.profileImageContainer}>
-        <Image
-          source={{ uri: imageUri || user?.imageUrl }}
-          style={styles.profileImage}
-        />
+        <TouchableOpacity
+          onPress={() =>
+            router.navigate(
+              `/(auth)/(modal)/image/${encodeURIComponent(
+                imageUri || user?.imageUrl || ""
+              )}`
+            )
+          }
+        >
+          <Image
+            source={{ uri: imageUri || user?.imageUrl }}
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
         <View style={styles.imageButtonsContainer}>
           <TouchableOpacity
             style={styles.imageButton}
@@ -110,6 +120,17 @@ const Page = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <Button
+        title="Download Image"
+        onPress={() =>
+          router.navigate(
+            `/(auth)/(modal)/image/${encodeURIComponent(
+              "https://avatars.githubusercontent.com/u/45228014?v=4"
+            )}?prompt=${encodeURIComponent("test")}`
+          )
+        }
+      />
 
       <Text style={styles.label}>Profile Settings</Text>
       <View style={styles.inputContainer}>
