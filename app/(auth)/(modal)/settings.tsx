@@ -1,34 +1,43 @@
-import Colors from '@/constants/Colors';
-import { defaultStyles } from '@/constants/Styles';
-import { useAuth, useUser } from '@clerk/clerk-expo';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Button, Alert, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import Colors from "@/constants/Colors";
+import { defaultStyles } from "@/constants/Styles";
+import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Button,
+  Alert,
+  Image,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
 
 const Page = () => {
   const { user } = useUser();
-
-  const [firstName, setFirstName] = useState(user?.firstName || '');
-  const [lastName, setLastName] = useState(user?.lastName || '');
-  const router = useRouter();
   const { signOut } = useAuth();
-  const [imageUri, setImageUri] = useState<string | null>(user?.imageUrl || null);
+  const router = useRouter();
+
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
+  const [imageUri, setImageUri] = useState<string | null>(
+    user?.imageUrl || null
+  );
 
   const pickImage = async (useCamera: boolean) => {
     try {
-      if (useCamera) {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert('Sorry, we need camera permissions to make this work!');
-          return;
-        }
-      } else {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert('Sorry, we need gallery permissions to make this work!');
-          return;
-        }
+      const permissionResult = useCamera
+        ? await ImagePicker.requestCameraPermissionsAsync()
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (permissionResult.status !== "granted") {
+        Alert.alert(
+          "Permission required",
+          "Sorry, we need permissions to make this work!"
+        );
+        return;
       }
 
       const result = await (useCamera
@@ -51,14 +60,15 @@ const Page = () => {
         const base64 = result.assets[0].base64;
         const mimeType = result.assets[0].mimeType;
         const image = `data:${mimeType};base64,${base64}`;
-        
+
         setImageUri(result.assets[0].uri);
-        await user?.setProfileImage({
-          file: image,
-        });
+        await user?.setProfileImage({ file: image });
       }
     } catch (error: any) {
-      Alert.alert(error.errors?.[0]?.message || 'Failed to pick image');
+      Alert.alert(
+        "Error",
+        error.errors?.[0]?.message || "Failed to pick image"
+      );
     }
   };
 
@@ -69,10 +79,9 @@ const Page = () => {
         lastName,
         username: `${firstName}${lastName}`,
       });
-
-      router.navigate('/(auth)/(drawer)');
+      router.navigate("/(auth)/(drawer)");
     } catch (error) {
-      Alert.alert('Error', 'Failed to update profile');
+      Alert.alert("Error", "Failed to update profile");
     }
   };
 
@@ -86,12 +95,14 @@ const Page = () => {
         <View style={styles.imageButtonsContainer}>
           <TouchableOpacity
             style={styles.imageButton}
-            onPress={() => pickImage(false)}>
+            onPress={() => pickImage(false)}
+          >
             <Text style={styles.imageButtonText}>Gallery</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.imageButton}
-            onPress={() => pickImage(true)}>
+            onPress={() => pickImage(true)}
+          >
             <Text style={styles.imageButtonText}>Camera</Text>
           </TouchableOpacity>
         </View>
@@ -113,10 +124,10 @@ const Page = () => {
         autoCorrect={false}
       />
 
-      
       <TouchableOpacity
         style={[defaultStyles.btn, { backgroundColor: Colors.primary }]}
-        onPress={saveSettings}>
+        onPress={saveSettings}
+      >
         <Text style={styles.buttonText}>Save Settings</Text>
       </TouchableOpacity>
 
@@ -142,21 +153,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     marginBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
-
   buttonText: {
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
     fontSize: 16,
-  },
-  successText: {
-    fontSize: 16,
-    color: Colors.primary,
-    marginBottom: 20,
   },
   profileImageContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   profileImage: {
@@ -167,7 +172,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grey,
   },
   imageButtonsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   imageButton: {
@@ -177,8 +182,8 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   imageButtonText: {
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
   },
 });
 

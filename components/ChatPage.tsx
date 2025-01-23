@@ -1,8 +1,8 @@
 import HeaderDropDown from "@/components/HeaderDropDown";
 import MessageInput from "@/components/MessageInput";
 import { defaultStyles } from "@/constants/Styles";
-import { keyStorage, storage } from "@/utils/Storage";
-import { Redirect, Stack, useLocalSearchParams } from "expo-router";
+import { storage } from "@/utils/Storage";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Image,
@@ -10,8 +10,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Alert,
-  Text,
 } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 import { FlashList } from "@shopify/flash-list";
